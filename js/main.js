@@ -2,25 +2,17 @@ import { initializeSimpleInterestListeners } from './simpleInterest.js';
 import { initializeCompoundInterestListeners } from './compoundInterest.js';
 import { initializeRateConversionListeners } from './rateConversion.js';
 
-
-// --- CONTROLE PRINCIPAL DA INTERFACE E GERAÇÃO DE CONTEÚDO ---
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Gera o conteúdo HTML de todas as abas
     generateAllTabsContent();
-
-    // 2. Garante o estado de visibilidade inicial correto
     document.querySelectorAll('.tab-content').forEach(content => {
         content.style.display = 'none';
     });
     document.querySelector('.tab-content.active').style.display = 'block';
-
-    // 3. Anexa os eventos de clique aos botões de cálculo
     attachEventListeners();
 });
 
-
 function generateAllTabsContent() {
-    // --- TEMPLATE PARA ABAS DE CAPITALIZAÇÃO ---
+
     const createCapitalizationTabHTML = (type, title, formulasHTML) => {
         const prefix = type.slice(0, 1); // 's' ou 'c'
         return `
@@ -31,12 +23,10 @@ function generateAllTabsContent() {
                         <div><label for="${prefix}-vp" class="block text-sm font-medium text-gray-600">Valor Presente (VP) - Capital</label><input type="number" id="${prefix}-vp" placeholder="Ex: 10000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                         <div><label for="${prefix}-vf" class="block text-sm font-medium text-gray-600">Valor Futuro (VF) - Montante</label><input type="number" id="${prefix}-vf" placeholder="Ex: 12000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                         <div><label for="${prefix}-juros" class="block text-sm font-medium text-gray-600">Juros (J)</label><input type="number" id="${prefix}-juros" placeholder="Ex: 2000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
-                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label for="${prefix}-taxa" class="block text-sm font-medium text-gray-600">Taxa (i) (%)</label><input type="number" id="${prefix}-taxa" placeholder="Ex: 2.5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                             <div><label for="${prefix}-taxaUnidade" class="block text-sm font-medium text-gray-600">Unidade da Taxa</label><select id="${prefix}-taxaUnidade" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"><option value="mes">Ao Mês</option><option value="ano">Ao Ano</option><option value="dia">Ao Dia</option></select></div>
                         </div>
-                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label for="${prefix}-tempo" class="block text-sm font-medium text-gray-600">Tempo (n)</label><input type="number" id="${prefix}-tempo" placeholder="Ex: 12" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                             <div><label for="${prefix}-tempoUnidade" class="block text-sm font-medium text-gray-600">Unidade do Tempo</label><select id="${prefix}-tempoUnidade" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"><option value="meses">Meses</option><option value="anos">Anos</option><option value="dias">Dias</option></select></div>
@@ -49,7 +39,6 @@ function generateAllTabsContent() {
                     ${type === 'simples' ? `
                     <div class="p-4 border rounded-lg mt-6">
                         <h3 class="font-semibold text-lg mb-4 text-gray-700">Taxa de Desconto Comercial vs Efetiva</h3>
-                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label for="d-taxa" class="block text-sm font-medium text-gray-600">Taxa (%)</label><input type="number" id="d-taxa" placeholder="Ex: 5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
                             <div><label for="d-tempo" class="block text-sm font-medium text-gray-600">Tempo (n)</label><input type="number" id="d-tempo" placeholder="Ex: 3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
@@ -100,19 +89,29 @@ function generateAllTabsContent() {
     const conversaoTabHTML = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="p-4 border rounded-lg">
-                <h3 class="font-semibold text-lg mb-4">Taxa Nominal para Efetiva (J. Composto)</h3>
-                <div class="space-y-4">
-                    <div><label for="taxaNominal" class="block text-sm font-medium text-gray-600">Taxa Nominal (anual)</label><input type="number" id="taxaNominal" placeholder="Ex: 12" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
-                    <div><label for="periodoNominal" class="block text-sm font-medium text-gray-600">Período de Capitalização</label><select id="periodoNominal" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="12">Mensal</option><option value="2">Semestral</option><option value="4">Trimestral</option><option value="360">Diária</option></select></div>
-                    <button id="conv-calcTaxaEfetiva" class="w-full p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">Converter para Efetiva/Período</button>
-                    <div id="conv-resultadoEfetiva" class="mt-4 text-center font-semibold text-lg h-10"></div>
+                <h3 class="font-semibold text-lg mb-4 text-gray-700">Conversão: Nominal <> Efetiva (J. Composto)</h3>
+
+                <div class="space-y-4 p-4 border-b">
+                    <p class="text-sm font-semibold text-gray-600">1. Descobrir a Taxa Efetiva/Proporcional</p>
+                    <div><label for="taxaNominal" class="block text-sm font-medium text-gray-600">Taxa Nominal (anual, %)</label><input type="number" id="taxaNominal" placeholder="Ex: 24" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                    <div><label for="periodoNominal" class="block text-sm font-medium text-gray-600">Capitalizada em Período</label><select id="periodoNominal" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="12">Mensal</option><option value="2">Semestral</option><option value="4">Trimestral</option><option value="360">Diária</option></select></div>
+                    <button id="conv-calcTaxaEfetiva" class="w-full p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">Calcular Taxa Efetiva do Período</button>
                 </div>
+
+                <div class="space-y-4 p-4">
+                    <p class="text-sm font-semibold text-gray-600">2. Descobrir a Taxa Nominal Anual</p>
+                     <div><label for="taxaEfetiva" class="block text-sm font-medium text-gray-600">Taxa Efetiva do Período (%)</label><input type="number" id="taxaEfetiva" placeholder="Ex: 2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                     <div><label for="periodoEfetivo" class="block text-sm font-medium text-gray-600">Período da Taxa Efetiva</label><select id="periodoEfetivo" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="12">Mensal</option><option value="2">Semestral</option><option value="4">Trimestral</option><option value="360">Diária</option></select></div>
+                     <button id="conv-calcTaxaNominal" class="w-full p-3 bg-cyan-500 text-white rounded-md hover:bg-cyan-600">Calcular Taxa Nominal Anual</button>
+                </div>
+                
+                <div id="conv-resultadoEfetiva" class="mt-2 text-center font-semibold text-lg h-12 flex items-center justify-center"></div>
             </div>
+
             <div class="p-4 border rounded-lg">
                 <h3 class="font-semibold text-lg mb-4">Taxas Equivalentes (J. Composto)</h3>
                 <div class="space-y-4">
                     <div><label for="taxaEquivalente" class="block text-sm font-medium text-gray-600">Taxa (%)</label><input type="number" id="taxaEquivalente" placeholder="Ex: 2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div><label for="periodoAtual" class="block text-sm font-medium text-gray-600">Período da Taxa</label><select id="periodoAtual" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="mes">Mensal</option><option value="ano">Anual</option><option value="semestre">Semestral</option><option value="trimestre">Trimestral</option><option value="dia">Diário</option></select></div>
                         <div><label for="periodoDesejado" class="block text-sm font-medium text-gray-600">Converter para</label><select id="periodoDesejado" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="ano">Anual</option><option value="mes">Mensal</option><option value="semestre">Semestral</option><option value="trimestre">Trimestral</option><option value="dia">Diário</option></select></div>
@@ -132,18 +131,14 @@ function generateAllTabsContent() {
     }
 }
 
-// O restante do seu main.js pode continuar igual
 function attachEventListeners() {
-    // --- LÓGICA DE CLIQUE PARA AS ABAS ---
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {
-            // Pega o nome da aba do atributo data-tab que criamos
             const tabId = button.getAttribute('data-tab');
             switchTab(tabId);
         });
     });
 
-    // --- LÓGICA PARA OS BOTÕES DE CÁLCULO (continua a mesma) ---
     initializeSimpleInterestListeners();
     initializeCompoundInterestListeners();
     initializeRateConversionListeners();
@@ -172,55 +167,4 @@ function switchTab(tabId) {
     document.getElementById(`content-${tabId}`).style.display = 'block';
     document.getElementById(`content-${tabId}`).classList.add('active');
     document.getElementById(`tab-${tabId}`).classList.add('active');
-}
-
-// As funções de formatação, erro e harmonização continuam as mesmas
-// (Você não precisa alterar o código abaixo)
-
-function formatResult(resultDivId, label, value, unit = '') {
-    const resultDiv = document.getElementById(resultDivId);
-    let formattedValue;
-    if (typeof value === 'number') {
-        if (label.toLowerCase().includes('taxa') || label.toLowerCase().includes('desconto')) {
-            formattedValue = (value * 100).toFixed(4).replace('.', ',') + '%';
-        } else if (label.toLowerCase().includes('tempo')) {
-            formattedValue = value.toFixed(2).replace('.', ',');
-        } else {
-            formattedValue = value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-    } else {
-        formattedValue = value;
-    }
-    resultDiv.innerHTML = `<div class="text-center"><p class="text-lg text-gray-600">${label}</p><p class="text-3xl font-bold text-blue-600">${formattedValue} ${unit}</p></div>`;
-}
-
-function showError(resultDivId, message) {
-    document.getElementById(resultDivId).innerHTML = `<p class="text-red-500 font-semibold text-center">${message}</p>`;
-}
-
-function harmonizarTempo(tempo, tempoUnidade, taxaUnidade) {
-    const conversao = {
-        anos: { mes: 12, dia: 360 }, // Usando ano comercial de 360 dias para consistência
-        meses: { ano: 1/12, dia: 30 },
-        dias: { ano: 1/360, mes: 1/30 }
-    };
-    // Ajuste para unidades de tempo 'dias', 'meses', 'anos'
-    const tempoUnidadeSingular = tempoUnidade.endsWith('s') ? tempoUnidade.slice(0, -1) : tempoUnidade;
-    
-    if (tempoUnidadeSingular === taxaUnidade) return tempo;
-
-    return (conversao[tempoUnidade] && conversao[tempoUnidade][taxaUnidade]) ? tempo * conversao[tempoUnidade][taxaUnidade] : tempo;
-}
-
-function harmonizarTempoReverso(tempo, taxaUnidade, tempoUnidade) {
-    const conversao = {
-        ano: { meses: 12, dias: 360 },
-        mes: { anos: 1/12, dias: 30 },
-        dia: { anos: 1/360, meses: 1/30 }
-    };
-    
-    const tempoUnidadeSingular = tempoUnidade.endsWith('s') ? tempoUnidade.slice(0, -1) : tempoUnidade;
-    if (taxaUnidade === tempoUnidadeSingular) return tempo;
-
-    return (conversao[taxaUnidade] && conversao[taxaUnidade][tempoUnidade]) ? tempo * conversao[taxaUnidade][tempoUnidade] : tempo;
 }
