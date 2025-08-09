@@ -31,13 +31,13 @@ function generateAllTabsContent() {
                         <div><label for="${prefix}-vp" class="block text-sm font-medium text-gray-600">Valor Presente (VP) - Capital</label><input type="number" id="${prefix}-vp" placeholder="Ex: 10000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                         <div><label for="${prefix}-vf" class="block text-sm font-medium text-gray-600">Valor Futuro (VF) - Montante</label><input type="number" id="${prefix}-vf" placeholder="Ex: 12000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                         <div><label for="${prefix}-juros" class="block text-sm font-medium text-gray-600">Juros (J)</label><input type="number" id="${prefix}-juros" placeholder="Ex: 2000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label for="${prefix}-taxa" class="block text-sm font-medium text-gray-600">Taxa (i) (%)</label><input type="number" id="${prefix}-taxa" placeholder="Ex: 2.5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
-
                             <div><label for="${prefix}-taxaUnidade" class="block text-sm font-medium text-gray-600">Unidade da Taxa</label><select id="${prefix}-taxaUnidade" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"><option value="mes">Ao Mês</option><option value="ano">Ao Ano</option><option value="dia">Ao Dia</option></select></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label for="${prefix}-tempo" class="block text-sm font-medium text-gray-600">Tempo (n)</label><input type="number" id="${prefix}-tempo" placeholder="Ex: 12" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
                             <div><label for="${prefix}-tempoUnidade" class="block text-sm font-medium text-gray-600">Unidade do Tempo</label><select id="${prefix}-tempoUnidade" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"><option value="meses">Meses</option><option value="anos">Anos</option><option value="dias">Dias</option></select></div>
                         </div>
@@ -49,11 +49,12 @@ function generateAllTabsContent() {
                     ${type === 'simples' ? `
                     <div class="p-4 border rounded-lg mt-6">
                         <h3 class="font-semibold text-lg mb-4 text-gray-700">Taxa de Desconto Comercial vs Efetiva</h3>
-                        <div class="grid grid-cols-2 gap-4">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label for="d-taxa" class="block text-sm font-medium text-gray-600">Taxa (%)</label><input type="number" id="d-taxa" placeholder="Ex: 5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
                             <div><label for="d-tempo" class="block text-sm font-medium text-gray-600">Tempo (n)</label><input type="number" id="d-tempo" placeholder="Ex: 3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 mt-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                             <button id="calcTaxaEfetivaSimples" class="p-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600">Calcular Taxa Efetiva (i)</button>
                             <button id="calcTaxaComercial" class="p-2 bg-green-500 text-white rounded-md text-sm hover:bg-green-600">Calcular Desconto (ic)</button>
                         </div>
@@ -62,7 +63,7 @@ function generateAllTabsContent() {
                 </div>
             </div>
             <div class="mt-8">
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
                     <button id="${prefix}-calcJuros" class="p-3 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition">Calcular Juros</button>
                     <button id="${prefix}-calcVp" class="p-3 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 transition">Calcular VP</button>
                     <button id="${prefix}-calcVf" class="p-3 bg-purple-500 text-white rounded-md shadow-sm hover:bg-purple-600 transition">Calcular VF</button>
@@ -87,7 +88,6 @@ function generateAllTabsContent() {
         <li><b>Desconto Comercial (ic):</b> \\( i_c = \\frac{i}{1 + i \\cdot n} \\)</li>
     `;
     
-    // CORREÇÃO 3: Legenda de Juros Compostos alterada
     const formulasComposto = `
         <li><b>Montante (VF):</b> \\( VF = VP \\cdot (1 + i)^n \\)</li>
         <li><b>Capital (VP):</b> \\( VP = \\frac{VF}{(1 + i)^n} \\)</li>
@@ -112,7 +112,8 @@ function generateAllTabsContent() {
                 <h3 class="font-semibold text-lg mb-4">Taxas Equivalentes (J. Composto)</h3>
                 <div class="space-y-4">
                     <div><label for="taxaEquivalente" class="block text-sm font-medium text-gray-600">Taxa (%)</label><input type="number" id="taxaEquivalente" placeholder="Ex: 2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
-                    <div class="grid grid-cols-2 gap-4">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div><label for="periodoAtual" class="block text-sm font-medium text-gray-600">Período da Taxa</label><select id="periodoAtual" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="mes">Mensal</option><option value="ano">Anual</option><option value="semestre">Semestral</option><option value="trimestre">Trimestral</option><option value="dia">Diário</option></select></div>
                         <div><label for="periodoDesejado" class="block text-sm font-medium text-gray-600">Converter para</label><select id="periodoDesejado" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"><option value="ano">Anual</option><option value="mes">Mensal</option><option value="semestre">Semestral</option><option value="trimestre">Trimestral</option><option value="dia">Diário</option></select></div>
                     </div>
@@ -131,8 +132,7 @@ function generateAllTabsContent() {
     }
 }
 
-
-
+// O restante do seu main.js pode continuar igual
 function attachEventListeners() {
     // --- LÓGICA DE CLIQUE PARA AS ABAS ---
     document.querySelectorAll('.tab-btn').forEach(button => {
@@ -174,6 +174,9 @@ function switchTab(tabId) {
     document.getElementById(`tab-${tabId}`).classList.add('active');
 }
 
+// As funções de formatação, erro e harmonização continuam as mesmas
+// (Você não precisa alterar o código abaixo)
+
 function formatResult(resultDivId, label, value, unit = '') {
     const resultDiv = document.getElementById(resultDivId);
     let formattedValue;
@@ -197,18 +200,27 @@ function showError(resultDivId, message) {
 
 function harmonizarTempo(tempo, tempoUnidade, taxaUnidade) {
     const conversao = {
-        anos: { mes: 12, dia: 365 },
-        meses: { ano: 1/12, dia: 30.417 },
-        dias: { ano: 1/365, mes: 1/30.417 }
+        anos: { mes: 12, dia: 360 }, // Usando ano comercial de 360 dias para consistência
+        meses: { ano: 1/12, dia: 30 },
+        dias: { ano: 1/360, mes: 1/30 }
     };
+    // Ajuste para unidades de tempo 'dias', 'meses', 'anos'
+    const tempoUnidadeSingular = tempoUnidade.endsWith('s') ? tempoUnidade.slice(0, -1) : tempoUnidade;
+    
+    if (tempoUnidadeSingular === taxaUnidade) return tempo;
+
     return (conversao[tempoUnidade] && conversao[tempoUnidade][taxaUnidade]) ? tempo * conversao[tempoUnidade][taxaUnidade] : tempo;
 }
 
 function harmonizarTempoReverso(tempo, taxaUnidade, tempoUnidade) {
     const conversao = {
-        ano: { meses: 12, dias: 365 },
-        mes: { anos: 1/12, dias: 30.417 },
-        dia: { anos: 1/365, meses: 1/30.417 }
+        ano: { meses: 12, dias: 360 },
+        mes: { anos: 1/12, dias: 30 },
+        dia: { anos: 1/360, meses: 1/30 }
     };
+    
+    const tempoUnidadeSingular = tempoUnidade.endsWith('s') ? tempoUnidade.slice(0, -1) : tempoUnidade;
+    if (taxaUnidade === tempoUnidadeSingular) return tempo;
+
     return (conversao[taxaUnidade] && conversao[taxaUnidade][tempoUnidade]) ? tempo * conversao[taxaUnidade][tempoUnidade] : tempo;
 }
