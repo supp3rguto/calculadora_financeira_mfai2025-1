@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Matemática Financeira</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="font-sans">
+
+    <header class="bg-blue-600 text-white p-6 shadow-md">
+        <h1 class="text-3xl font-bold">Calculadora Matemática Financeira</h1>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div id="tab-navigation" class="flex border-b mb-6">
+                <div id="tab-simples" data-tab="simples" class="tab-btn active">Capitalização Simples</div>
+                <div id="tab-composto" data-tab="composto" class="tab-btn">Capitalização Composta</div>
+                <div id="tab-conversao" data-tab="conversao" class="tab-btn">Conversão de Taxas</div>
+            </div>
+
+            <div id="content-simples" class="tab-content active"></div>
+            <div id="content-composto" class="tab-content"></div>
+            <div id="content-conversao" class="tab-content"></div>
+            
+            <button id="limpar-tudo" class="mt-8 w-full p-3 bg-gray-600 text-white rounded-md shadow-sm hover:bg-gray-700 transition">Limpar Tudo</button>
+        </div>
+    </main>
+    
+    <footer class="bg-gray-800 text-white text-center p-4">
+        <p class="text-sm">Projeto feito para a disciplina de Matemática Financeira e Análise de Investimentos do curso de Bacharelado em Sistemas de Informação</p>
+        <p class="text-xs mt-1">Desenvolvido por: Augusto Ortigoso Barbosa | @supp3rguto</p>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
