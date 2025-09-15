@@ -1,6 +1,7 @@
 import { initializeSimpleInterestListeners } from './simpleInterest.js';
 import { initializeCompoundInterestListeners } from './compoundInterest.js';
 import { initializeRateConversionListeners } from './rateConversion.js';
+import { initializeAmortizationVplListeners } from './amortizationVpl.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     generateAllTabsContent();
@@ -12,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function generateAllTabsContent() {
-
     const createCapitalizationTabHTML = (type, title, formulasHTML) => {
         const prefix = type.slice(0, 1); // 's' ou 'c'
         return `
@@ -125,11 +125,50 @@ function generateAllTabsContent() {
     document.getElementById('content-simples').innerHTML = createCapitalizationTabHTML('simples', 'Cálculo de Juros Simples', formulasSimples);
     document.getElementById('content-composto').innerHTML = createCapitalizationTabHTML('composto', 'Cálculo de Juros Compostos', formulasComposto);
     document.getElementById('content-conversao').innerHTML = conversaoTabHTML;
+    document.getElementById('content-amortizacao').innerHTML = generateAmortizationAndVplTabHTML();
+
 
     if (window.MathJax) {
         window.MathJax.typeset();
     }
 }
+
+function generateAmortizationAndVplTabHTML() {
+    return `
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="p-4 border rounded-lg">
+            <h3 class="font-semibold text-lg mb-4">Cálculo de Amortização (Tabela Price / SAF)</h3>
+            <div class="space-y-4">
+                <div><label for="amort-vp" class="block text-sm font-medium text-gray-600">Valor do Financiamento (VP)</label><input type="number" id="amort-vp" placeholder="Ex: 100000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                <div><label for="amort-taxa" class="block text-sm font-medium text-gray-600">Taxa de Juros (i) % ao período</label><input type="number" id="amort-taxa" placeholder="Ex: 1.5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                <div><label for="amort-tempo" class="block text-sm font-medium text-gray-600">Tempo (n) em períodos</label><input type="number" id="amort-tempo" placeholder="Ex: 120" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                <button id="calc-amortizacao" class="w-full p-3 bg-indigo-500 text-white rounded-md hover:bg-indigo-600">Gerar Tabela de Amortização</button>
+            </div>
+        </div>
+
+        <div class="p-4 border rounded-lg">
+            <h3 class="font-semibold text-lg mb-4">Cálculo do Valor Presente Líquido (VPL)</h3>
+            <div class="space-y-4">
+                <div><label for="vpl-investimento" class="block text-sm font-medium text-gray-600">Investimento Inicial</label><input type="number" id="vpl-investimento" placeholder="Valor do aporte inicial (Ex: 50000)" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                <div><label for="vpl-taxa" class="block text-sm font-medium text-gray-600">Taxa de Desconto (%) por período</label><input type="number" id="vpl-taxa" placeholder="Taxa Mínima de Atratividade (TMA)" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                <div><label for="vpl-fluxos" class="block text-sm font-medium text-gray-600">Fluxos de Caixa (separados por vírgula ou linha)</label><textarea id="vpl-fluxos" rows="3" placeholder="Ex: 10000, 12000, 15000, 20000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></textarea></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label for="vpl-residual" class="block text-sm font-medium text-gray-600">Valor Residual (opcional)</label><input type="number" id="vpl-residual" placeholder="Ex: 8000" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                    <div><label for="vpl-periodo-residual" class="block text-sm font-medium text-gray-600">Período do V. Residual</label><input type="number" id="vpl-periodo-residual" placeholder="Ex: 4" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div>
+                </div>
+                <button id="calc-vpl" class="w-full p-3 bg-emerald-500 text-white rounded-md hover:bg-emerald-600">Calcular VPL</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-8">
+        <h3 class="font-semibold text-lg mb-4">Resultados da Análise</h3>
+        <div id="amort-resultado" class="bg-gray-50 p-4 rounded-lg mb-6"><p class="text-gray-500 text-center">A tabela de amortização aparecerá aqui.</p></div>
+        <div id="vpl-resultado" class="bg-gray-50 p-4 rounded-lg"><p class="text-gray-500 text-center">O resultado do VPL aparecerá aqui.</p></div>
+    </div>
+    `;
+}
+
 
 function attachEventListeners() {
     document.querySelectorAll('.tab-btn').forEach(button => {
@@ -142,14 +181,21 @@ function attachEventListeners() {
     initializeSimpleInterestListeners();
     initializeCompoundInterestListeners();
     initializeRateConversionListeners();
+    initializeAmortizationVplListeners();
     
     document.getElementById('limpar-tudo').addEventListener('click', () => {
-        document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+        document.querySelectorAll('input[type="number"], textarea').forEach(input => input.value = '');
+        
         document.querySelectorAll('[id$="-resultado"]').forEach(div => {
-            if (div.id.startsWith('d-') || div.id.startsWith('conv-')) {
-                div.innerHTML = '';
-            } else {
+            const id = div.id;
+            if (id.startsWith('s-') || id.startsWith('c-')) {
                 div.innerHTML = '<p class="text-gray-500 text-center">Preencha os campos e clique em um botão para calcular.</p>';
+            } else if (id === 'amort-resultado') {
+                div.innerHTML = '<p class="text-gray-500 text-center">A tabela de amortização aparecerá aqui.</p>';
+            } else if (id === 'vpl-resultado') {
+                 div.innerHTML = '<p class="text-gray-500 text-center">O resultado do VPL aparecerá aqui.</p>';
+            } else {
+                 div.innerHTML = '';
             }
         });
     });
